@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول الإجازات الأسبوعي - نظام إدارة المخازن</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:title" content="جدول الإجازات الأسبوعي - نظام إدارة المخازن">
+    <meta property="og:description" content="جدول الإجازات الأسبوعي - نظام إدارة المخازن">
+    <meta name="description" content="جدول الإجازات الأسبوعي - نظام إدارة المخازن">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .week-selector {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .week-selector input {
+            padding: 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .vacation-form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .vacation-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .vacation-table th {
+            background: var(--color-primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .vacation-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .vacation-table tr:hover {
+            background: #f8f9fa;
+        }
+        .vacation-item {
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .vacation-item .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .vacation-item .remove-btn:hover {
+            background: #d32f2f;
+        }
+        .day-column {
+            min-width: 120px;
+            vertical-align: top;
+        }
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="فتح القائمة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="dashboard-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="sidebar-logo">
+                </div>
+                <h2>نظام المخازن</h2>
+                <div class="user-info">
+                    <p><strong id="userName">جاري التحميل...</strong></p>
+                    <span id="userRole" class="user-role">مستخدم</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    لوحة التحكم
+                </a>
+                <a href="products.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7h-9M14 17H5M14 17a3 3 0 0 1 6 0M14 17a3 3 0 0 0 6 0M10 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                    </svg>
+                    إدارة الأصناف
+                </a>
+                <a href="stock-movements.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 10v12M15 5v12M11 3H5a2 2 0 0 0-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2V5a2 2 0 0 0-2-2h-6z"></path>
+                    </svg>
+                    حركة المخزون
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18M7 16l4-4 4 4 6-6"></path>
+                    </svg>
+                    التقارير والإحصائيات
+                </a>
+                <a href="vacations.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    جدول الإجازات
+                </a>
+                <a href="permissions.html" class="nav-item" id="permissionsLink" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    إدارة الصلاحيات
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    إدارة المستخدمين
+                </a>
+            </nav>
+            
+            <button id="logoutBtn" class="logout-btn">تسجيل الخروج</button>
+        </aside>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>جدول الإجازات الأسبوعي</h1>
+                <p>إدارة وتسجيل الإجازات الأسبوعية للموظفين</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>إضافة إجازة جديدة</h2>
+                </div>
+                <div class="vacation-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employeeName">اسم الموظف</label>
+                            <input type="text" id="employeeName" placeholder="أدخل اسم الموظف" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vacationDate">تاريخ الإجازة</label>
+                            <input type="date" id="vacationDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vacationNotes">ملاحظات (اختياري)</label>
+                            <input type="text" id="vacationNotes" placeholder="ملاحظات إضافية">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="addVacationBtn">إضافة إجازة</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <h2>الجدول الأسبوعي</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="week-selector">
+                            <label>من:</label>
+                            <input type="date" id="weekStartDate" required>
+                            <label>إلى:</label>
+                            <input type="date" id="weekEndDate" required>
+                            <button type="button" class="btn btn-secondary" id="loadWeekBtn">تحميل الأسبوع</button>
+                        </div>
+                        <button type="button" class="btn btn-primary export-btn" id="exportPdfBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+                            </svg>
+                            تحميل PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="vacation-table" id="vacationTable">
+                        <thead>
+                            <tr>
+                                <th>الأحد</th>
+                                <th>الإثنين</th>
+                                <th>الثلاثاء</th>
+                                <th>الأربعاء</th>
+                                <th>الخميس</th>
+                                <th>الجمعة</th>
+                                <th>السبت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vacationTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+                                    حدد تاريخ البداية والنهاية ثم اضغط "تحميل الأسبوع"
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <button class="back-to-top" id="backToTop" aria-label="العودة للأعلى">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+    </button>
+    <script src="scripts/common.js"></script>
+    <!-- يجب تحميل storage.js قبل auth.js -->
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/common.js"></script>
+    <script src="scripts/vacations.js"></script>
+</body>
+</html>

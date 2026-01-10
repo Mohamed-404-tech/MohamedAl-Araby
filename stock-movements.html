@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حركة المخزون - نظام إدارة المخازن</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:title" content="حركة المخزون - نظام إدارة المخازن">
+    <meta property="og:description" content="حركة المخزون - نظام إدارة المخازن">
+    <meta name="description" content="حركة المخزون - نظام إدارة المخازن">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+</head>
+<body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="فتح القائمة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="sidebar-logo">
+                </div>
+                <h2>
+                    نظام المخازن
+                </h2>
+                <div class="user-info">
+                    <p><strong id="userName">جاري التحميل...</strong></p>
+                    <span id="userRole" class="user-role">مستخدم</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    لوحة التحكم
+                </a>
+                <a href="products.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7h-9M14 17H5M14 17a3 3 0 0 1 6 0M14 17a3 3 0 0 0 6 0M10 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                    </svg>
+                    إدارة الأصناف
+                </a>
+                <a href="stock-movements.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 10v12M15 5v12M11 3H5a2 2 0 0 0-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2V5a2 2 0 0 0-2-2h-6z"></path>
+                    </svg>
+                    حركة المخزون
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18M7 16l4-4 4 4 6-6"></path>
+                    </svg>
+                    التقارير والإحصائيات
+                </a>
+                <a href="vacations.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    جدول الإجازات
+                </a>
+                <a href="permissions.html" class="nav-item" id="permissionsLink" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    إدارة الصلاحيات
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    إدارة المستخدمين
+                </a>
+            </nav>
+            
+            <button id="logoutBtn" class="logout-btn">تسجيل الخروج</button>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>حركة المخزون</h1>
+                <p>استلام وصرف البضائع وعمل الجرد</p>
+            </div>
+            
+            <!-- Action Cards -->
+            <div class="stats-grid" style="margin-bottom: 32px;">
+                <div class="stat-card" style="cursor: pointer;" onclick="openMovementModal('in')">
+                    <div class="stat-header">
+                        <h3>استلام بضائع</h3>
+                        <div class="stat-icon" style="background: #d1fae5; color: #065f46;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p style="color: var(--color-text-secondary); margin-top: 12px;">
+                        إضافة كميات جديدة للمخزن
+                    </p>
+                </div>
+                
+                <div class="stat-card" style="cursor: pointer;" onclick="openMovementModal('out')">
+                    <div class="stat-header">
+                        <h3>صرف بضائع</h3>
+                        <div class="stat-icon" style="background: #fee2e2; color: #991b1b;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p style="color: var(--color-text-secondary); margin-top: 12px;">
+                        إخراج كميات من المخزن
+                    </p>
+                </div>
+                
+                <div class="stat-card" style="cursor: pointer;" onclick="openMovementModal('adjust')">
+                    <div class="stat-header">
+                        <h3>جرد المخزن</h3>
+                        <div class="stat-icon" style="background: #fef3c7; color: #92400e;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p style="color: var(--color-text-secondary); margin-top: 12px;">
+                        تعديل الكميات وتصحيح المخزون
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Movements History -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>سجل الحركات</h2>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-secondary btn-sm" onclick="exportMovements()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            تصدير Excel
+                        </button>
+                        <select id="filterType" class="btn btn-secondary btn-sm" style="padding: 6px 12px;">
+                            <option value="all">جميع الحركات</option>
+                            <option value="in">الاستلام فقط</option>
+                            <option value="out">الصرف فقط</option>
+                            <option value="adjust">الجرد فقط</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ والوقت</th>
+                                <th>الصنف</th>
+                                <th>المخزن</th>
+                                <th>النوع</th>
+                                <th>الكمية</th>
+                                <th>من أخذ/أدخل</th>
+                                <th>المستخدم</th>
+                                <th>الملاحظات</th>
+                                <th id="actionsHeader" style="display: none;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movementsTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                    جاري تحميل البيانات...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal: Add Movement -->
+    <div id="movementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">حركة مخزون</h2>
+                <button class="close-modal" id="closeModal">×</button>
+            </div>
+            
+            <form id="movementForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productSelect">الصنف *</label>
+                        <select id="productSelect" required>
+                            <option value="">اختر الصنف</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="movementWarehouse">المخزن *</label>
+                        <select id="movementWarehouse" required>
+                            <option value="">اختر المخزن</option>
+                            <option value="المخزن الأول">المخزن الأول</option>
+                            <option value="المخزن الثاني">المخزن الثاني</option>
+                            <option value="المخزن الثالث">المخزن الثالث</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="quantityGroup" class="form-group">
+                    <label for="quantity">الكمية *</label>
+                    <input type="number" id="quantity" min="1" required>
+                </div>
+                
+                <div id="adjustGroup" class="form-group" style="display: none;">
+                    <label for="newQuantity">الكمية الجديدة بعد الجرد *</label>
+                    <input type="number" id="newQuantity" min="0">
+                    <small style="color: var(--color-text-secondary); display: block; margin-top: 8px;">
+                        الكمية الحالية: <strong id="currentQuantity">0</strong>
+                    </small>
+                </div>
+                
+                <div id="takenFromGroup" class="form-group" style="display: none;">
+                    <label for="takenFrom">من أخذ الصنف *</label>
+                    <input type="text" id="takenFrom" placeholder="اسم الشخص أو الجهة التي أخذت الصنف" required>
+                </div>
+                
+                <div id="receivedFromGroup" class="form-group" style="display: none;">
+                    <label for="receivedFrom">من أدخل الصنف *</label>
+                    <input type="text" id="receivedFrom" placeholder="اسم المورد أو الشخص الذي أدخل الصنف" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">الملاحظات</label>
+                    <textarea id="notes" rows="3" placeholder="أضف ملاحظات إضافية..."></textarea>
+                </div>
+                
+                <input type="hidden" id="movementType">
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">حفظ</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script src="scripts/firebase-config.js"></script>
+    <script src="scripts/firebase-sync.js"></script>
+    <button class="back-to-top" id="backToTop" aria-label="العودة للأعلى">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+    </button>
+    <!-- يجب تحميل storage.js قبل auth.js -->
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/common.js"></script>
+    <script src="scripts/export-import.js"></script>
+    <script src="scripts/stock-movements.js"></script>
+</body>
+</html>
